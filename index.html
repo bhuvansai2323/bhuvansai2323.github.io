@@ -48,18 +48,6 @@
   .loader-text { font-family: 'Alex Brush', cursive; font-size: 1.6rem; color: var(--gold); opacity: 0.9; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── MUSIC BUTTON ── */
-  #music-btn {
-    position: fixed; top: 18px; right: 18px; z-index: 999;
-    width: 44px; height: 44px; border-radius: 50%;
-    background: rgba(201,168,76,0.18);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(201,168,76,0.4);
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s; color: var(--gold); font-size: 1.1rem;
-  }
-  #music-btn:hover { background: rgba(201,168,76,0.3); transform: scale(1.05); }
-
   /* ── SHARE BUTTON ── */
   #share-btn {
     position: fixed; top: 18px; left: 18px; z-index: 999;
@@ -771,9 +759,6 @@
 <!-- PARTICLES -->
 <div id="particles"></div>
 
-<!-- MUSIC BUTTON -->
-<button id="music-btn" type="button" onclick="toggleMusic()" aria-label="Toggle background music">🔇</button>
-
 <!-- MUSIC -->
 <audio id="bg-music" loop preload="metadata" playsinline webkit-playsinline="true">
   <source src="./song.mpeg" type="audio/mpeg">
@@ -1174,45 +1159,19 @@ buildImageGallery();
 
 let musicPlaying=false;
 const music=document.getElementById('bg-music');
-const musicBtn=document.getElementById('music-btn');
-function syncMusicButton(){
-  if(!musicBtn) return;
-  musicBtn.textContent=musicPlaying ? '🎵' : '🔇';
-  musicBtn.setAttribute('aria-label', musicPlaying ? 'Pause background music' : 'Play background music');
-}
-function toggleMusic(){
-  if(!music) return;
-  if(musicPlaying){
-    music.pause();
-    musicPlaying=false;
-    syncMusicButton();
-    return;
-  }
-  music.play().then(()=>{
-    musicPlaying=true;
-    syncMusicButton();
-  }).catch(()=>{
-    musicPlaying=false;
-    syncMusicButton();
-  });
-}
-
 function startMusicOnFirstTouch(){
   if(!music || musicPlaying) return;
   music.play().then(()=>{
     musicPlaying=true;
-    syncMusicButton();
   }).catch(()=>{
     musicPlaying=false;
-    syncMusicButton();
   });
 }
 
 document.addEventListener('pointerdown', startMusicOnFirstTouch, { once: true });
 document.addEventListener('touchstart', startMusicOnFirstTouch, { once: true, passive: true });
-music.addEventListener('pause', ()=>{ musicPlaying=false; syncMusicButton(); });
-music.addEventListener('play', ()=>{ musicPlaying=true; syncMusicButton(); });
-syncMusicButton();
+music.addEventListener('pause', ()=>{ musicPlaying=false; });
+music.addEventListener('play', ()=>{ musicPlaying=true; });
 
 // ── COUNTDOWN
 const weddingDate=new Date('2026-05-13T09:24:00+05:30');
@@ -1399,11 +1358,12 @@ if(ty) tyObs.observe(ty);
       for(let i=3;i<d.length;i+=4) if(d[i]<128) t++;
       const p=t/(w*h);
       pcts[idx]=Math.min(p,1);
-      const avg=(pcts[0]+pcts[1]+pcts[2])/3;
-      document.getElementById('sc-fill').style.width=Math.round(avg*100)+'%';
-      document.getElementById('sc-pct').textContent=Math.round(avg*100)+'% scratched';
       if(p>=THRESH){
         done[idx]=true;
+        pcts[idx]=1;
+        const avg=(pcts[0]+pcts[1]+pcts[2])/3;
+        document.getElementById('sc-fill').style.width=Math.round(avg*100)+'%';
+        document.getElementById('sc-pct').textContent=Math.round(avg*100)+'% scratched';
         canvas.style.transition='opacity .6s ease';
         canvas.style.opacity='0';
         setTimeout(()=>{canvas.style.display='none';},650);
@@ -1419,6 +1379,10 @@ if(ty) tyObs.observe(ty);
           }
           setTimeout(()=>{document.getElementById('sc-time-strip').classList.add('show');},500);
         }
+      } else {
+        const avg=(pcts[0]+pcts[1]+pcts[2])/3;
+        document.getElementById('sc-fill').style.width=Math.round(avg*100)+'%';
+        document.getElementById('sc-pct').textContent=Math.round(avg*100)+'% scratched';
       }
     }
     canvas.addEventListener('mousedown',e=>{drawing=true;const p=pos(e);scratch(p.x,p.y);});
