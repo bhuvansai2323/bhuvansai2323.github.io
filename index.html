@@ -967,7 +967,11 @@
   <h2 class="section-title reveal">Our Gallery</h2>
   <div class="divider reveal" style="--line-color:rgba(201,168,76,0.3)"><div class="divider-line" style="background:linear-gradient(90deg,transparent,rgba(201,168,76,0.4),transparent)"></div><div class="divider-diamond"></div><div class="divider-line" style="background:linear-gradient(90deg,transparent,rgba(201,168,76,0.4),transparent)"></div></div>
 
-  <div class="gallery-grid" id="gallery-grid"></div>
+  <div class="gallery-grid" id="gallery-grid">
+    <div class="gallery-item visible"><img src="./together.jpg" alt="Together"></div>
+    <div class="gallery-item visible"><img src="./first-look.jpg" alt="First Look"></div>
+    <div class="gallery-item visible"><img src="./engagaement.jpg" alt="Engagement"></div>
+  </div>
 
   <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.9rem;color:rgba(255,255,255,0.4);margin-top:18px;text-align:center;">Tap any photo to keep revealing the next memory</p>
 </section>
@@ -1075,9 +1079,9 @@ const palettes = [
 ];
 const labels=['Engagement','First Look','Together','Our Story'];
 const galleryImages = [
-  'engagaement.JPG',
-  'first-look.JPG',
-  'together.JPG'
+  'engagaement.jpg',
+  'first-look.jpg',
+  'together.jpg'
 ];
 const gg=document.getElementById('gallery-grid');
 palettes.forEach((pal,i)=>{
