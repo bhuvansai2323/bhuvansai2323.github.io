@@ -771,8 +771,11 @@
 <!-- PARTICLES -->
 <div id="particles"></div>
 
+<!-- MUSIC BUTTON -->
+<button id="music-btn" type="button" onclick="toggleMusic()" aria-label="Toggle background music">🔇</button>
+
 <!-- MUSIC -->
-<audio id="bg-music" loop preload="none">
+<audio id="bg-music" loop preload="metadata" playsinline webkit-playsinline="true">
   <source src="./song.mpeg" type="audio/mpeg">
 </audio>
 
@@ -1011,13 +1014,14 @@
 
   <div class="map-container reveal" style="transition-delay:0.2s" id="map-wrap">
     <iframe
-      src="https://maps.google.com/maps?q=K.R.+Convention+%26+Residency+G.N.T.+Road+Opp.+Bharath+Petrol+Bunk+Kovvur+E.G.Dist.&output=embed&z=14"
+      src="https://www.google.com/maps?q=K.R.%20Convention%20%26%20Residency%2C%20G.N.T.%20Road%2C%20Opp.%20Bharath%20Petrol%20Bunk%2C%20Kovvur%2C%20E.G.%20Dist.&z=14&output=embed"
+      title="K.R. Convention and Residency location map"
       frameborder="0" allowfullscreen loading="lazy"
       referrerpolicy="no-referrer-when-downgrade">
     </iframe>
   </div>
   <p class="map-address reveal" style="transition-delay:0.3s">K.R. Convention & Residency<br>G.N.T. Road, Opp. Bharath Petrol Bunk,<br>Kovvur, E.G. Dist.</p>
-  <a class="map-btn reveal" href="https://maps.google.com?q=K.R.+Convention+%26+Residency+G.N.T.+Road+Opp.+Bharath+Petrol+Bunk+Kovvur+E.G.Dist." target="_blank" style="transition-delay:0.4s">
+  <a class="map-btn reveal" href="https://www.google.com/maps/search/?api=1&query=K.R.%20Convention%20%26%20Residency%2C%20G.N.T.%20Road%2C%20Opp.%20Bharath%20Petrol%20Bunk%2C%20Kovvur%2C%20E.G.%20Dist." target="_blank" rel="noopener noreferrer" style="transition-delay:0.4s">
     📍 Open in Maps
   </a>
 </section>
@@ -1171,21 +1175,44 @@ buildImageGallery();
 let musicPlaying=false;
 const music=document.getElementById('bg-music');
 const musicBtn=document.getElementById('music-btn');
+function syncMusicButton(){
+  if(!musicBtn) return;
+  musicBtn.textContent=musicPlaying ? '🎵' : '🔇';
+  musicBtn.setAttribute('aria-label', musicPlaying ? 'Pause background music' : 'Play background music');
+}
 function toggleMusic(){
-  if(musicPlaying){ music.pause(); musicBtn.textContent='🔇'; }
-  else { music.play().catch(()=>{}); musicBtn.textContent='🎵'; }
-  musicPlaying=!musicPlaying;
+  if(!music) return;
+  if(musicPlaying){
+    music.pause();
+    musicPlaying=false;
+    syncMusicButton();
+    return;
+  }
+  music.play().then(()=>{
+    musicPlaying=true;
+    syncMusicButton();
+  }).catch(()=>{
+    musicPlaying=false;
+    syncMusicButton();
+  });
 }
 
 function startMusicOnFirstTouch(){
-  if(musicPlaying) return;
+  if(!music || musicPlaying) return;
   music.play().then(()=>{
     musicPlaying=true;
-    musicBtn.textContent='🎵';
-  }).catch(()=>{});
+    syncMusicButton();
+  }).catch(()=>{
+    musicPlaying=false;
+    syncMusicButton();
+  });
 }
 
 document.addEventListener('pointerdown', startMusicOnFirstTouch, { once: true });
+document.addEventListener('touchstart', startMusicOnFirstTouch, { once: true, passive: true });
+music.addEventListener('pause', ()=>{ musicPlaying=false; syncMusicButton(); });
+music.addEventListener('play', ()=>{ musicPlaying=true; syncMusicButton(); });
+syncMusicButton();
 
 // ── COUNTDOWN
 const weddingDate=new Date('2026-05-13T09:24:00+05:30');
