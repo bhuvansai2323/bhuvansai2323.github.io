@@ -760,7 +760,8 @@
 <div id="particles"></div>
 
 <!-- MUSIC -->
-<audio id="bg-music" loop preload="metadata" playsinline webkit-playsinline="true">
+<audio id="bg-music" loop preload="auto" playsinline webkit-playsinline="true">
+  <source src="./song.mp3" type="audio/mpeg">
   <source src="./song.mpeg" type="audio/mpeg">
 </audio>
 
@@ -1159,19 +1160,37 @@ buildImageGallery();
 
 let musicPlaying=false;
 const music=document.getElementById('bg-music');
+let musicStartBound=false;
 function startMusicOnFirstTouch(){
   if(!music || musicPlaying) return;
+  music.load();
   music.play().then(()=>{
     musicPlaying=true;
+    unbindMusicStart();
   }).catch(()=>{
     musicPlaying=false;
   });
 }
 
-document.addEventListener('pointerdown', startMusicOnFirstTouch, { once: true });
-document.addEventListener('touchstart', startMusicOnFirstTouch, { once: true, passive: true });
+function bindMusicStart(){
+  if(musicStartBound) return;
+  musicStartBound=true;
+  document.addEventListener('pointerdown', startMusicOnFirstTouch, { passive: true });
+  document.addEventListener('touchstart', startMusicOnFirstTouch, { passive: true });
+  document.addEventListener('click', startMusicOnFirstTouch, { passive: true });
+}
+
+function unbindMusicStart(){
+  if(!musicStartBound) return;
+  musicStartBound=false;
+  document.removeEventListener('pointerdown', startMusicOnFirstTouch);
+  document.removeEventListener('touchstart', startMusicOnFirstTouch);
+  document.removeEventListener('click', startMusicOnFirstTouch);
+}
+
+bindMusicStart();
 music.addEventListener('pause', ()=>{ musicPlaying=false; });
-music.addEventListener('play', ()=>{ musicPlaying=true; });
+music.addEventListener('play', ()=>{ musicPlaying=true; unbindMusicStart(); });
 
 // ── COUNTDOWN
 const weddingDate=new Date('2026-05-13T09:24:00+05:30');
